@@ -4,9 +4,18 @@ terraform {
     workspaces {
       name = "adrian-ooo"
     }
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "3.59.0"
+      }
+    }
   }
 }
 
+provider "aws" {
+  region = "us-east-1"
+}
 module "hugosite" {
   source              = "github.com/fillup/terraform-hugo-s3-cloudfront"
   aws_region          = "us-east-1"
