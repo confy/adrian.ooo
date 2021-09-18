@@ -1,5 +1,5 @@
 variable "aliases" {
- type        = "list"
+ type        = list(string)
  default     = ["www.adrian.ooo", "adrian.ooo"]
  description = "List of hostname aliases"
 }
