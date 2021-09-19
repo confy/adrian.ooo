@@ -8,32 +8,35 @@ section:
   template: sections/about.html
 
 # your designation
-designation: Software Engineer
+designation: Student
 # your company information
-company:
-  name: Example Co.
-  url: "https://www.example.com"
+company: 
+  name: BCIT
+  url: "https://www.bcit.ca/programs/computer-information-technology-diploma-full-time-5540dipma/"
 
 # your resume. this file path should be relative to you "static" directory
 resume: "files/resume.pdf"
 
 # a summary about you
-summary: 'I am a passionate software engineer with x years of working experience. I built OSS tools for [Kubernetes](https://kubernetes.io/) using GO. My tools help people to deploy their workloads in Kubernetes. Sometimes, I work on some fun projects such as writing a theme, etc.'
+summary: 'I am a computing student with 9 years of working experience. My experience is pretty diverse - from automated electrical tests to embedded programming to Windows desktop GUI to enterprise applications deployed to the cloud.'
 
 # your social links
 # give as many as you want. use font-awesome for the icons.
 socialLinks:
 - name: Github
   icon: "fab fa-github"
-  url: "https://www.github.com/example"
+  url: "https://www.github.com/confy"
+- name: LinkedIn
+  icon: "fab fa-linkedin"
+  url: "https://www.linkedin.com/in/adrian-mcfarlane-b0b06b20b/"
 
 # your soft skills
 # give the percentage between 50 to 100 with 5 intervals.
 # currently supported colors: blue, yellow, pink, green, sky, orange
 softSkills:
-- name: Leadership
+- name: Scripting
   percentage: 85
   color: blue
-- name: Team Work
+- name: Fast Learner
   percentage: 90
-  color: yellow
+  color: red
