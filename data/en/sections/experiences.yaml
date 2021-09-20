@@ -11,32 +11,34 @@ section:
 # Your experiences
 experiences:
 - company:
-    name: Example Co.
-    url: "https://www.example.com"
-    location: Dhaka Branch
+    name: Encepta
+    url: "https://www.encepta.net/"
+    location: Vancouver
     # company overview
-    overview: Example Co. is a widely recognized company for cloud-native development. It builds tools for Kubernetes.
+    overview: Encepta is a professional services firm delivering outside plant field services, design, inspection, and construction management, as well as big-data analytics and AI-powered models for the telecommunication sector.
   positions:
-  - designation: Senior Software Engineer
-    start: Nov 2019
+  - designation: Field Technician
+    start: June 2021
     # don't provide end date if you are currently working there. It will be replaced by "Present"
-    # end: Dec 2020
+    end: Aug 2021
     # give some points about what was your responsibilities at the company.
     responsibilities:
-    - Design and develop XYZ tool for ABC task
-    - Design, develop and manage disaster recovery tool [Xtool](https://www.example.com) that backup Kubernetes volumes, databases, and cluster's resource definition.
-    - Lead backend team.
-
+    - Conducted field audits of client telecommunications equipment data and updated to match what was seen in the field.
+    - Used GIS mapping software to match location coordinates from data with real world devices.
+    - Identified and photographed devices to mark faulty units needing replacement.
+    - Independently managed schedule and routes to ensure project deadlines were met.
 - company:
-    name: PreExample Co.
-    url: "https://www.preexample.com"
-    location: Nowhere
-    overview: PreExample Co. is a gateway company to enter into Example co. So, nothing special here.
+    name: Evergreen Computers
+    url: "https://www.evergreencomputers.ca/"
+    location: North Vancouver
+    overview: 
   positions:
-  - designation: Software Engineer
-    start: March 2016
-    end: May 2017
+  - designation: IT Service Technician
+    start: Jan 2020
+    end: Aug 2020
     responsibilities:
-    - Write lots of example codes.
-    - Read lots of examples.
-    - See lots of example videos.
+    - Diagnosed, serviced, replaced parts, and made suggestions of potential solutions to customers regarding the hardware or software of their computers.
+    - Created parts lists and built custom desktop computers based on customer’s needs and abilities.
+    - Wrote PowerShell scripts to automate repetitive processes and lower service turnaround times. These scripts are now used by management and new employees as standard procedure.
+    - Created new company data backup and recovery procedures to prevent customer data loss.
+    - Provided in depth troubleshooting and service to managed service clients.

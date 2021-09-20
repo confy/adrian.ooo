@@ -18,7 +18,7 @@ company:
 resume: "files/resume.pdf"
 
 # a summary about you
-summary: 'I am a computing student with 9 years of working experience. My experience is pretty diverse - from automated electrical tests to embedded programming to Windows desktop GUI to enterprise applications deployed to the cloud.'
+summary: 'I am a computing student with 2 years technical work experience and a lifetime interest in technology. My experience is pretty diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
 
 # your social links
 # give as many as you want. use font-awesome for the icons.
@@ -29,14 +29,20 @@ socialLinks:
 - name: LinkedIn
   icon: "fab fa-linkedin"
   url: "https://www.linkedin.com/in/adrian-mcfarlane-b0b06b20b/"
+- name: Instagram
+  icon: "fab fa-instagram"
+  url: "https://www.instagram.com/adrianmc/"
 
 # your soft skills
 # give the percentage between 50 to 100 with 5 intervals.
 # currently supported colors: blue, yellow, pink, green, sky, orange
 softSkills:
-- name: Scripting
-  percentage: 85
-  color: blue
 - name: Fast Learner
   percentage: 90
   color: red
+- name: Creativity
+  percentage: 90
+  color: green
+- name: Enthusiasm
+  percentage: 95
+  color: yellow

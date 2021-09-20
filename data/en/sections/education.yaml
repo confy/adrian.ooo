@@ -1,0 +1,28 @@
+section:
+  name: Education
+  id: education
+  template: sections/education.html # Use "sections/education-alt.html for alternate template.
+  enable: true
+  weight: 4
+  showOnNavbar: true
+  # Can optionally hide the title in sections
+  # hideTitle: true
+
+degrees:
+- name: Computer Information Technology Diploma
+  icon: fa-hammer
+  timeframe: Sept 2020-
+  institution:
+    name: British Columbia Institute of Technology
+    url: "https://www.bcit.ca/"
+  grade: #(optional)
+    scale: GPA
+    achieved: 90
+    outOf: 100
+  # publications: #(optional)
+  # - title: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  #   url: "#"
+  # - title: Fusce eu augue ut odio porttitor pulvinar.
+  #   url: "#"
+  # - title: Nullam vitae orci tincidunt purus viverra pulvinar.
+  #   url: "#"
