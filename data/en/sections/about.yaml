@@ -18,7 +18,7 @@ company:
 resume: "files/resume.pdf"
 
 # a summary about you
-summary: 'I am a computing student with 2 years technical work experience and a lifetime interest in technology. My experience is pretty diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
+summary: 'I am a computing student with 2 years of technical work experience and a life long interest in technology. My experience is diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
 
 # your social links
 # give as many as you want. use font-awesome for the icons.
@@ -45,4 +45,4 @@ softSkills:
   color: green
 - name: Enthusiasm
   percentage: 95
-  color: yellow
+  color: blue
