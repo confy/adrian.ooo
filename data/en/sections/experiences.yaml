@@ -11,6 +11,25 @@ section:
 # Your experiences
 experiences:
 - company:
+    name: Safe Software
+    url: "https://www.safe.com/"
+    location: Surrey
+    # company overview
+    overview: Safe Software is the maker of FME and the pioneering global leader in spatial data transformation technology. FME empowers users to confidently transform spatial data so it can be used and shared - where, when and how it's needed. 
+  positions:
+  - designation: Devops Engineer (Intern)
+    start: Jan 2022
+    # don't provide end date if you are currently working there. It will be replaced by "Present"
+    end: Aug 2022
+    # give some points about what was your responsibilities at the company.
+    responsibilities:
+    - Worked in a team responsible for automating Build and Test for a large cross-platform C++ application.
+    - Automated tasks using Powershell, Bash, Python, Groovy and Jenkins.
+    - Deployed Incredibuild network build accelerator in CI services to improve build times and minimize feedback time for developers.
+    - Used Hashicorp packer to automate creation of base windows AMIs for build and test machines.
+    - Provided prompt troubleshooting of build services and provided updates to internal developers.
+    - Experimented with massively parallel builds during company hackathon using llamac++, a drop in replacement for gcc that compiles in AWS lambda serverless.
+- company:
     name: Encepta
     url: "https://www.encepta.net/"
     location: Vancouver
