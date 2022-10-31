@@ -15,7 +15,7 @@ company:
   url: "https://www.bcit.ca/programs/computer-information-technology-diploma-full-time-5540dipma/"
 
 # your resume. this file path should be relative to you "static" directory
-resume: "files/resume.pdf"
+resume: "files/resume2022.pdf"
 
 # a summary about you
 summary: 'I am a computing student with 2 years of technical work experience and a life long interest in technology. My experience is diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
