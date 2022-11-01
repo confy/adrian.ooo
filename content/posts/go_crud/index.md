@@ -1,6 +1,6 @@
 ---
 title: "Building a CRUD API in Go"
-date: 2020-06-08T08:06:25+06:00
+date: 2022-10-31T05:00:25+08:00
 hero: /images/sections/posts/go_crud/hero.png
 description: Adding analytics and disquss comment in hugo theme Toha
 menu:
@@ -9,9 +9,9 @@ menu:
     weight: 500
 ---
 
-I've been looking for an oppurtunity to pick up Go lately, and with a break in my studies recently it was a good oppurtunity to give it a try. 
+I've been looking for an oppurtunity to pick up Go lately and with a break in my studies recently it was a good oppurtunity to give it a try. 
 
-Go is really well suited to webservices like this as it offers a relatively simple and friendly syntax, high performance and the ability to compile to a single binary file with no dependencies. Go also offers easily accesible concurrency via goroutines.
+Go is really well suited to a web service like this as it offers a simple and friendly syntax along with high performance and the ability to compile to a single binary file. Go also offers easily accesible concurrency via goroutines.
 
 In this project we'll be creating a simple web service using Go, Echo and GORM with SQLite. In the end we'll have a single value CRUD API, with the ability to create, read, update and delete entries.
 
@@ -166,7 +166,7 @@ type Data struct {
 }
 ```
 
-This is a simple model that has a single field called `Value` that is a uint. Following the Name and type of the field, we have a json tag that will be used to serialize the data to JSON. 
+This is a simple model that has a single field called `Value` that is a uint. Following the Name and type of the field, we have a `json:"value"` tag, meaning this string will be used when serializing the data to JSON. 
 
 We also have the `ID`, `CreatedAt`, `UpdatedAt` and `DeletedAt` fields that are created automatically by GORM which I've chosen to define explicitly here.
 
