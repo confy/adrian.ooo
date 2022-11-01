@@ -1,0 +1,499 @@
+<!doctype html><html>
+<head>
+<title>Building a CRUD API in Go</title>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<link rel=stylesheet href=/css/bootstrap.min.css>
+<link rel=stylesheet href=/css/layouts/main.css>
+<link rel=stylesheet href=/css/navigators/navbar.css>
+<link rel=stylesheet href=/css/plyr.css>
+<link rel=stylesheet href=/css/flag-icon.min.css>
+<link rel=stylesheet href=/google-fonts/Mulish/mulish.css>
+<link rel=stylesheet href=/fontawesome/css/all.min.css>
+<link rel=icon type=image/png href=/images/site/earth_hu4f6877b92e4fd700848e5f9305d8383c_39488_42x0_resize_box_3.png>
+<meta property="og:title" content="Building a CRUD API in Go">
+<meta property="og:description" content="Exploring Go with Echo, Gorm and SQLite">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://confy.github.io/posts/go_crud/"><meta property="article:section" content="posts">
+<meta property="article:published_time" content="2022-10-31T05:00:25+08:00">
+<meta property="article:modified_time" content="2022-10-31T05:00:25+08:00">
+<meta name=description content="Exploring Go with Echo, Gorm and SQLite">
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/atom-one-dark.min.css>
+<link rel=stylesheet href=/css/layouts/single.css>
+<link rel=stylesheet href=/css/navigators/sidebar.css>
+<link rel=stylesheet href=/css/style.css>
+<script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(a,e,f,g,b,c,d){a.GoogleAnalyticsObject=b,a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)},a[b].l=1*new Date,c=e.createElement(f),d=e.getElementsByTagName(f)[0],c.async=1,c.src=g,d.parentNode.insertBefore(c,d)}(window,document,'script','https://www.google-analytics.com/analytics.js','ga'),ga('create','UA-122321624-2','auto'),ga('send','pageview'))</script>
+</head>
+<body data-spy=scroll data-target=#TableOfContents data-offset=80>
+<div class="container-fluid bg-dimmed wrapper">
+<nav class="navbar navbar-expand-xl top-navbar final-navbar shadow">
+<div class=container>
+<button class="navbar-toggler navbar-light" id=sidebar-toggler type=button onclick=toggleSidebar()>
+<span class=navbar-toggler-icon></span>
+</button>
+<a class=navbar-brand href=/>
+<img src=/images/site/earth_hu4f6877b92e4fd700848e5f9305d8383c_39488_42x0_resize_box_3.png alt=Logo>
+Adrian.ooo</a>
+<button class="navbar-toggler navbar-light" id=toc-toggler type=button onclick=toggleTOC()>
+<span class=navbar-toggler-icon></span>
+</button>
+<div class="collapse navbar-collapse lang-selector" id=top-nav-items>
+<ul class="navbar-nav ml-auto">
+</ul>
+</div>
+</div>
+<img src=/images/site/earth_hu4f6877b92e4fd700848e5f9305d8383c_39488_42x0_resize_box_3.png class=d-none id=main-logo alt=Logo>
+<img src=/images/site/earth_hu4f6877b92e4fd700848e5f9305d8383c_39488_42x0_resize_box_3.png class=d-none id=inverted-logo alt="Inverted Logo">
+</nav>
+<section class=sidebar-section id=sidebar-section>
+<div class=sidebar-holder>
+<div class=sidebar id=sidebar>
+<form class=mx-auto method=get action=/search>
+<input type=text name=keyword placeholder=Search data-search id=search-box>
+</form>
+<div class=sidebar-tree>
+<ul class=tree id=tree>
+<li id=list-heading><a href=/posts data-filter=all>Posts</a></li>
+<div class=subtree>
+<li><a class=active href=/posts/go_crud/ title="Go CRUD API">Go CRUD API</a></li>
+</div>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section class=content-section id=content-section>
+<div class=content>
+<div class="container p-0 read-area">
+<div class="hero-area col-sm-12" id=hero-area style=background-image:url(/images/sections/posts/go_crud/hero.png)>
+</div>
+<div class=page-content>
+<div class="author-profile ml-auto align-self-lg-center">
+<img class=rounded-circle src=/images/author/adrian-opalspoon_hue1e004f68374052e8c4bc7984e590418_100474_120x120_fit_q75_box.jpg alt="Author Image">
+<h5 class=author-name>Adrian McFarlane</h5>
+<p>Monday, October 31, 2022</p>
+</div>
+<div class=title>
+<h1>Building a CRUD API in Go</h1>
+</div>
+<div class=taxonomy-terms>
+<ul style=padding-left:0>
+</ul>
+</div>
+<div class=post-content id=post-content>
+<p>I&rsquo;ve been looking for an oppurtunity to pick up Go lately and with a break in my studies recently it was a good oppurtunity to give it a try.</p>
+<p>Go is really well suited to a web service like this as it offers a simple and friendly syntax along with high performance and the ability to compile to a single binary file. Go also offers easily accesible concurrency via goroutines.</p>
+<p>In this project we&rsquo;ll be creating a simple web service using Go, Echo and GORM with SQLite. In the end we&rsquo;ll have a single value CRUD API, with the ability to create, read, update and delete entries.</p>
+<p>The github repo for this project can be found <a href=https://github.com/confy/go_crud>here</a>.</p>
+<h2 id=stack>Stack</h2>
+<p>I will be using the following Go modules:</p>
+<h5 id=echo>Echo</h5>
+<p>Echo is a high performance, extensible, minimalist web framework for Go. It is designed to quickly create APIs with minimal effort. Echo implements the Go stdlib <code>http.Handler</code> interface, with a handler created in a goroutine for each request. This allows for a high level of concurrency and performance.</p>
+<h5 id=gorm>GORM</h5>
+<p>GORM is an ORM or Object relational mapper for Go that aims to be developer friendly. It is a very powerful tool that makes it easy to interact with databases and supports MySQL, Postgres, SQLite, SQL Server and Oracle.</p>
+<h5 id=sqlite-with-the-gorm-driver>SQLite with the GORM driver</h5>
+<p>SQLite is a lightweight file based database that is easy to use and does not require a server to run. It&rsquo;s not as fast as a database server, but it will allow us to quickly containerize our application.</p>
+<p>We will also be using the SQLite driver for GORM. This driver allows us to use SQLite with GORM.</p>
+<p>Eventually, the SQLite database will become a bottleneck as writes will lock the file momentarily. Later on in this project we&rsquo;ll experiment with benchmarking with Jmeter to see how our service performs under load.</p>
+<h2 id=setup>Setup</h2>
+<p>First make sure you have <a href=https://go.dev/dl/>Go</a> installed. I&rsquo;m using Go 1.19.</p>
+<p>Let&rsquo;s create a new directory for our project and initialize a new go module.</p>
+<p><code>mkdir go_crud</code></p>
+<p><code>cd go_crud</code></p>
+<p><code>go mod init go_crud</code></p>
+<p>This will create a new <code>go.mod</code> file in our project directory. This is used by Go to manage dependencies.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>module</span> <span style=color:#a6e22e>go_crud</span>
+
+<span style=color:#66d9ef>go</span> <span style=color:#ae81ff>1.19</span>
+</code></pre></div><p>Next, we&rsquo;ll download our dependencies:</p>
+<p><code>go get github.com/labstack/echo/v4</code></p>
+<p><code>go get gorm.io/gorm</code></p>
+<p><code>go get gorm.io/driver/sqlite</code></p>
+<p>This will download the Echo framework, GORM and the SQLite driver for GORM.</p>
+<p>Our <code>go.mod</code> file should now look like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>module</span> <span style=color:#a6e22e>go_crud</span>
+
+<span style=color:#66d9ef>go</span> <span style=color:#ae81ff>1.19</span>
+
+<span style=color:#a6e22e>require</span> (
+	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>jinzhu</span><span style=color:#f92672>/</span><span style=color:#a6e22e>inflection</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.0.0</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>jinzhu</span><span style=color:#f92672>/</span><span style=color:#a6e22e>now</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.1.5</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>labstack</span><span style=color:#f92672>/</span><span style=color:#a6e22e>echo</span><span style=color:#f92672>/</span><span style=color:#a6e22e>v4</span> <span style=color:#a6e22e>v4</span><span style=color:#ae81ff>.9.1</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>labstack</span><span style=color:#f92672>/</span><span style=color:#a6e22e>gommon</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.4.0</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>mattn</span><span style=color:#f92672>/</span><span style=color:#66d9ef>go</span><span style=color:#f92672>-</span><span style=color:#a6e22e>colorable</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.1.11</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>mattn</span><span style=color:#f92672>/</span><span style=color:#66d9ef>go</span><span style=color:#f92672>-</span><span style=color:#a6e22e>isatty</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.0.14</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>mattn</span><span style=color:#f92672>/</span><span style=color:#66d9ef>go</span><span style=color:#f92672>-</span><span style=color:#a6e22e>sqlite3</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.14.15</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>valyala</span><span style=color:#f92672>/</span><span style=color:#a6e22e>bytebufferpool</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.0.0</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>github</span>.<span style=color:#a6e22e>com</span><span style=color:#f92672>/</span><span style=color:#a6e22e>valyala</span><span style=color:#f92672>/</span><span style=color:#a6e22e>fasttemplate</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.2.1</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>golang</span>.<span style=color:#a6e22e>org</span><span style=color:#f92672>/</span><span style=color:#a6e22e>x</span><span style=color:#f92672>/</span><span style=color:#a6e22e>crypto</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.0.0</span><span style=color:#f92672>-</span><span style=color:#ae81ff>20210817164053</span><span style=color:#f92672>-</span><span style=color:#ae81ff>32</span><span style=color:#a6e22e>db794688a5</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>golang</span>.<span style=color:#a6e22e>org</span><span style=color:#f92672>/</span><span style=color:#a6e22e>x</span><span style=color:#f92672>/</span><span style=color:#a6e22e>net</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.0.0</span><span style=color:#f92672>-</span><span style=color:#ae81ff>20211015210444</span><span style=color:#f92672>-</span><span style=color:#ae81ff>4</span><span style=color:#a6e22e>f30a5c0130f</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>golang</span>.<span style=color:#a6e22e>org</span><span style=color:#f92672>/</span><span style=color:#a6e22e>x</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sys</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.0.0</span><span style=color:#f92672>-</span><span style=color:#ae81ff>20211103235746</span><span style=color:#f92672>-</span><span style=color:#ae81ff>7861</span><span style=color:#a6e22e>aae1554b</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>golang</span>.<span style=color:#a6e22e>org</span><span style=color:#f92672>/</span><span style=color:#a6e22e>x</span><span style=color:#f92672>/</span><span style=color:#a6e22e>text</span> <span style=color:#a6e22e>v0</span><span style=color:#ae81ff>.3.7</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>io</span><span style=color:#f92672>/</span><span style=color:#a6e22e>driver</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqlite</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.4.3</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>io</span><span style=color:#f92672>/</span><span style=color:#a6e22e>gorm</span> <span style=color:#a6e22e>v1</span><span style=color:#ae81ff>.24.0</span> <span style=color:#75715e>// indirect
+</span><span style=color:#75715e></span>)
+</code></pre></div><h2 id=making-the-server-with-echo>Making the server with Echo</h2>
+<p>Next we&rsquo;ll create a new file called <code>main.go</code> and add the following code.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+
+<span style=color:#f92672>import</span> (
+	<span style=color:#e6db74>&#34;net/http&#34;</span>
+
+	<span style=color:#e6db74>&#34;github.com/labstack/echo/v4&#34;</span>
+	<span style=color:#e6db74>&#34;github.com/labstack/echo/v4/middleware&#34;</span>
+)
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+	<span style=color:#a6e22e>e</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>New</span>()
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Use</span>(<span style=color:#a6e22e>middleware</span>.<span style=color:#a6e22e>Logger</span>())
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Use</span>(<span style=color:#a6e22e>middleware</span>.<span style=color:#a6e22e>Recover</span>())
+
+    <span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/hello&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>String</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#e6db74>&#34;Hello 🌎&#34;</span>)
+    })
+
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Logger</span>.<span style=color:#a6e22e>Fatal</span>(<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Start</span>(<span style=color:#e6db74>&#34;:8080&#34;</span>))
+}
+</code></pre></div><p>This will create a new Echo server that listens on port 8080. We&rsquo;ll be using the Logger and Recover middleware to log requests and recover from panics. We&rsquo;ll also add a new route that returns a string when we visit <code>localhost:8080/hello</code>.</p>
+<p>Now we can run our server with <code>go run main.go</code></p>
+<p>Visit <code>localhost:8080/hello</code> and you should see <code>Hello 🌎</code> and see output in your terminal:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-plain data-lang=plain>  ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ v4.9.0
+High performance, minimalist Go web framework
+https://echo.labstack.com
+____________________________________O/_______
+                                    O\
+⇨ http server started on [::]:8080
+{&#34;time&#34;:&#34;2022-10-29T16:58:49.0841777-07:00&#34;,&#34;id&#34;:&#34;&#34;,&#34;remote_ip&#34;:&#34;::1&#34;,&#34;host&#34;:&#34;localhost:8080&#34;,&#34;method&#34;:&#34;GET&#34;,&#34;uri&#34;:&#34;/hello&#34;,&#34;user_agent&#34;:&#34;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0
+Safari/537.36&#34;,&#34;status&#34;:200,&#34;error&#34;:&#34;&#34;,&#34;latency&#34;:0,&#34;latency_human&#34;:&#34;0s&#34;,&#34;bytes_in&#34;:0,&#34;bytes_out&#34;:10}
+
+</code></pre></div><h2 id=writing-the-model>Writing the model</h2>
+<p>We&rsquo;re going to make an API that allows us to create, read, update and delete from our SQLite database using JSON.</p>
+<p>Let&rsquo;s start by making a model of our data using GORM. Create a new folder called <code>models</code> and add a new file called <code>model.go</code> with the following code.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>models</span>
+
+<span style=color:#f92672>import</span> (
+	<span style=color:#e6db74>&#34;time&#34;</span>
+
+	<span style=color:#e6db74>&#34;gorm.io/gorm&#34;</span>
+)
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Data</span> <span style=color:#66d9ef>struct</span> {
+	<span style=color:#a6e22e>Value</span>     <span style=color:#66d9ef>uint</span> <span style=color:#e6db74>`json:&#34;value&#34;`</span>
+
+	<span style=color:#a6e22e>ID</span>        <span style=color:#66d9ef>uint</span>   <span style=color:#e6db74>`gorm:&#34;primaryKey&#34;`</span>
+	<span style=color:#a6e22e>CreatedAt</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>
+	<span style=color:#a6e22e>UpdatedAt</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>
+	<span style=color:#a6e22e>DeletedAt</span> <span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>DeletedAt</span>
+}
+</code></pre></div><p>This is a simple model that has a single field called <code>Value</code> that is a uint. Following the Name and type of the field, we have a <code>json:"value"</code> tag, meaning this string will be used when serializing the data to JSON.</p>
+<p>We also have the <code>ID</code>, <code>CreatedAt</code>, <code>UpdatedAt</code> and <code>DeletedAt</code> fields that are created automatically by GORM which I&rsquo;ve chosen to define explicitly here.</p>
+<h2 id=creating-a-database-factory>Creating a database factory</h2>
+<p>Next, we need to create a sqlite database, along with a table for our data. We&rsquo;ll do this in a new file called <code>database.go</code> in a new <code>database</code> folder.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>database</span>
+
+<span style=color:#f92672>import</span> (
+	<span style=color:#e6db74>&#34;go_crud/models&#34;</span>
+
+	<span style=color:#e6db74>&#34;gorm.io/driver/sqlite&#34;</span>
+	<span style=color:#e6db74>&#34;gorm.io/gorm&#34;</span>
+)
+
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>DB</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>DB</span>
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>Connect</span>() <span style=color:#f92672>*</span><span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>DB</span> {
+	<span style=color:#a6e22e>db</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>Open</span>(<span style=color:#a6e22e>sqlite</span>.<span style=color:#a6e22e>Open</span>(<span style=color:#e6db74>&#34;test.db&#34;</span>), <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>gorm</span>.<span style=color:#a6e22e>Config</span>{})
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+		panic(<span style=color:#e6db74>&#34;failed to connect database&#34;</span>)
+	}
+	<span style=color:#a6e22e>db</span>.<span style=color:#a6e22e>AutoMigrate</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>{})
+
+	<span style=color:#a6e22e>DB</span> = <span style=color:#a6e22e>db</span>
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>DB</span>
+}
+</code></pre></div><p>First we import our model, along with gorm and the sqlite driver. We&rsquo;ll also create a global variable called <code>DB</code> that we can use to access our database from other files.</p>
+<p>The <code>Connect</code> function will create a new sqlite database called <code>test.db</code> and create a table for our data model(using <code>AutoMigrate</code>) before returning our DB. If the database already exists, it will just connect to it.</p>
+<h2 id=creating-the-routes>Creating the routes</h2>
+<p>Ok let&rsquo;s tie everything together. We&rsquo;ll create a new file called <code>routes.go</code> in the <code>routes</code> folder and add the following:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>routes</span>
+
+<span style=color:#f92672>import</span> (
+	<span style=color:#e6db74>&#34;go_crud/database&#34;</span>
+	<span style=color:#e6db74>&#34;go_crud/models&#34;</span>
+	<span style=color:#e6db74>&#34;net/http&#34;</span>
+	<span style=color:#e6db74>&#34;strconv&#34;</span>
+
+	<span style=color:#e6db74>&#34;github.com/labstack/echo/v4&#34;</span>
+)
+
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>DB</span> = <span style=color:#a6e22e>database</span>.<span style=color:#a6e22e>Connect</span>()
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>message</span>(<span style=color:#a6e22e>message</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span> {
+	<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>{<span style=color:#e6db74>&#34;message&#34;</span>: <span style=color:#a6e22e>message</span>}
+}
+
+</code></pre></div><p>We&rsquo;ll import our database, model and echo, along with http for status codes and strconv for formatting responses. Next we&rsquo;ll create our <code>DB</code> variable using the <code>Connect</code> function we created earlier.</p>
+<p>We&rsquo;ll also create a message function for easily sending JSON responses. One thing that is worth noticing here is the way Go allows you to anonymously declare maps with specific types in the <code>map[string]string</code> syntax.</p>
+<p>As it is now we aren&rsquo;t using many of our imports, so Go will complain. We can fix this by adding some routes. Each route will receive <code>c echo.Context</code> and return the same <code>error</code> type</p>
+<h4 id=createpost>Create(POST)</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>PostData</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>data</span> <span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>
+	<span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Bind</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>)
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+	}
+
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>Create</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>)
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusCreated</span>, <span style=color:#a6e22e>data</span>)
+}
+</code></pre></div><h4 id=readget>Read(GET)</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>GetData</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+	<span style=color:#a6e22e>id</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Param</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>data</span> <span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>First</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>, <span style=color:#a6e22e>id</span>)
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>ID</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> { <span style=color:#75715e>// Gorm returns id 0 if not found
+</span><span style=color:#75715e></span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>NewHTTPError</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusNotFound</span>, <span style=color:#a6e22e>message</span>(<span style=color:#e6db74>&#34;Data not found&#34;</span>))
+	}
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>data</span>)
+}
+</code></pre></div><h4 id=updateput>Update(PUT)</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>PutData</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+	<span style=color:#a6e22e>id</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Param</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>data</span> <span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>First</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>, <span style=color:#a6e22e>id</span>)
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>ID</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> {
+		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>NewHTTPError</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusNotFound</span>, <span style=color:#a6e22e>message</span>(<span style=color:#e6db74>&#34;Data not found&#34;</span>))
+	}
+	<span style=color:#a6e22e>id_uint</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>strconv</span>.<span style=color:#a6e22e>ParseUint</span>(<span style=color:#a6e22e>id</span>, <span style=color:#ae81ff>10</span>, <span style=color:#ae81ff>64</span>)
+	<span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>ID</span> = <span style=color:#a6e22e>id_uint</span>
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>NewHTTPError</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusBadRequest</span>, <span style=color:#a6e22e>message</span>(<span style=color:#e6db74>&#34;Invalid ID&#34;</span>))
+	}
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Bind</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>); <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> { <span style=color:#75715e>// Binds the request body to our data var
+</span><span style=color:#75715e></span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>err</span>
+	}
+	
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>Save</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>)
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>data</span>)
+}
+</code></pre></div><h4 id=deletedelete>Delete(DELETE)</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>DeleteData</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+	<span style=color:#a6e22e>id</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Param</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>data</span> <span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>First</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>, <span style=color:#a6e22e>id</span>)
+	<span style=color:#66d9ef>if</span> <span style=color:#a6e22e>data</span>.<span style=color:#a6e22e>ID</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> {
+		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>NewHTTPError</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusNotFound</span>, <span style=color:#a6e22e>message</span>(<span style=color:#e6db74>&#34;Data not found&#34;</span>))
+	}
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>Delete</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>)
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>NoContent</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusNoContent</span>)
+}
+</code></pre></div><h4 id=average>Average</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>GetAverage</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+	<span style=color:#a6e22e>items</span> <span style=color:#f92672>:=</span> []<span style=color:#a6e22e>models</span>.<span style=color:#a6e22e>Data</span>{}
+	<span style=color:#a6e22e>DB</span>.<span style=color:#a6e22e>Find</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>items</span>)
+	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>sum</span> <span style=color:#66d9ef>uint64</span>
+	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>item</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>items</span> {
+		<span style=color:#a6e22e>sum</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>item</span>.<span style=color:#a6e22e>Value</span>
+	}
+	<span style=color:#a6e22e>length</span> <span style=color:#f92672>:=</span> len(<span style=color:#a6e22e>items</span>)
+	<span style=color:#a6e22e>res</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>struct</span> {
+		<span style=color:#a6e22e>Average</span> <span style=color:#66d9ef>float64</span> <span style=color:#e6db74>`json:&#34;average&#34;`</span>
+		<span style=color:#a6e22e>Length</span> <span style=color:#66d9ef>int</span> <span style=color:#e6db74>`json:&#34;length&#34;`</span>
+	} {
+		<span style=color:#a6e22e>Average</span>: float64(<span style=color:#a6e22e>sum</span>) <span style=color:#f92672>/</span> float64(<span style=color:#a6e22e>length</span>),
+		<span style=color:#a6e22e>Length</span>: <span style=color:#a6e22e>length</span>,
+	}
+	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>res</span>)
+}
+</code></pre></div><h2 id=adding-the-routes-to-our-server>Adding the routes to our server</h2>
+<p>Now that we have our routes, we need to add them to our server. Open up <code>main.go</code> and replace with the following code.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+
+<span style=color:#f92672>import</span> (
+	<span style=color:#e6db74>&#34;go_crud/routes&#34;</span>
+
+	<span style=color:#e6db74>&#34;github.com/labstack/echo/v4&#34;</span>
+	<span style=color:#e6db74>&#34;github.com/labstack/echo/v4/middleware&#34;</span>
+)
+
+<span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+	<span style=color:#a6e22e>e</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>New</span>()
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Use</span>(<span style=color:#a6e22e>middleware</span>.<span style=color:#a6e22e>Logger</span>())
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Use</span>(<span style=color:#a6e22e>middleware</span>.<span style=color:#a6e22e>Recover</span>())
+
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/data&#34;</span>, <span style=color:#a6e22e>routes</span>.<span style=color:#a6e22e>PostData</span>)
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/data/:id&#34;</span>, <span style=color:#a6e22e>routes</span>.<span style=color:#a6e22e>GetData</span>)
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>PUT</span>(<span style=color:#e6db74>&#34;/data/:id&#34;</span>, <span style=color:#a6e22e>routes</span>.<span style=color:#a6e22e>PutData</span>)
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>DELETE</span>(<span style=color:#e6db74>&#34;/data/:id&#34;</span>, <span style=color:#a6e22e>routes</span>.<span style=color:#a6e22e>DeleteData</span>)
+
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/average&#34;</span>, <span style=color:#a6e22e>routes</span>.<span style=color:#a6e22e>GetAverage</span>)
+
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/hello&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>echo</span>.<span style=color:#a6e22e>Context</span>) <span style=color:#66d9ef>error</span> {
+        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>String</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#e6db74>&#34;Hello 🌎&#34;</span>)
+    })
+
+	<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Logger</span>.<span style=color:#a6e22e>Fatal</span>(<span style=color:#a6e22e>e</span>.<span style=color:#a6e22e>Start</span>(<span style=color:#e6db74>&#34;:8080&#34;</span>))
+	
+}
+</code></pre></div><p>We&rsquo;ll import our routes and also bind each of our routes to the <code>/data</code> or <code>/average</code> url.</p>
+<p>Finally, we can start our server using <code>go run main.go</code> and test our routes using curl or Postman.</p>
+<p>If we post to <code>localhost:8080/data</code> with a JSON body of <code>{"value": 10}</code> we should get a response of</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;id&#34;</span>: <span style=color:#ae81ff>1</span>,
+  <span style=color:#f92672>&#34;value&#34;</span>: <span style=color:#ae81ff>10</span>,
+  <span style=color:#f92672>&#34;created_at&#34;</span>: <span style=color:#e6db74>&#34;2021-01-01T00:00:00Z&#34;</span>,
+  <span style=color:#f92672>&#34;updated_at&#34;</span>: <span style=color:#e6db74>&#34;2021-01-01T00:00:00Z&#34;</span>,
+  <span style=color:#f92672>&#34;deleted_at&#34;</span>: <span style=color:#66d9ef>null</span>
+}
+</code></pre></div><p>We&rsquo;ll post again using <code>{"value": 21}</code> and now we can query <code>localhost:8080/average</code> to get a response of</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{ <span style=color:#f92672>&#34;average&#34;</span>: <span style=color:#ae81ff>15.5</span>, <span style=color:#f92672>&#34;length&#34;</span>: <span style=color:#ae81ff>2</span> }
+</code></pre></div><h2 id=conclusion>Conclusion</h2>
+<p>I hope this showcased how easy it is to get started with Go and how it can be used to create a simple web service. I was surprised at how easy it was to use and how much I enjoyed working with it.</p>
+<p>I would usually use python for something like this and I have dealt with some slowness in the past. Compared to Python, Go really is the best of both worlds. It has the speed and simplicity of a compiled language and the ease of use of a scripting language.</p>
+<p>I hope you enjoyed this tutorial and if you have any questions or suggestions, feel free to email me at <a href=mailto:me@adrian.ooo>me@adrian.ooo</a></p>
+</div>
+<div class="row pl-3 pr-3">
+<div class="col-md-6 share-buttons">
+<strong>Share on:</strong>
+<a class="btn btn-sm facebook-btn" href="https://www.facebook.com/sharer.php?u=https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f" target=_blank>
+<i class="fab fa-facebook"></i>
+</a>
+<a class="btn btn-sm twitter-btn" href="https://twitter.com/share?url=https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f&text=Building%20a%20CRUD%20API%20in%20Go&via=Adrian.ooo" target=_blank>
+<i class="fab fa-twitter"></i>
+</a>
+<a class="btn btn-sm reddit-btn" href="https://reddit.com/submit?url=https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f&title=Building%20a%20CRUD%20API%20in%20Go" target=_blank>
+<i class="fab fa-reddit"></i>
+</a>
+<a class="btn btn-sm linkedin-btn" href="https://www.linkedin.com/shareArticle?url=https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f&title=Building%20a%20CRUD%20API%20in%20Go" target=_blank>
+<i class="fab fa-linkedin"></i>
+</a>
+<a class="btn btn-sm whatsapp-btn" href="https://api.whatsapp.com/send?text=Building%20a%20CRUD%20API%20in%20Go https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f" target=_blank>
+<i class="fab fa-whatsapp"></i>
+</a>
+<a class="btn btn-sm email-btn" href="mailto:?subject=Building%20a%20CRUD%20API%20in%20Go&body=https%3a%2f%2fconfy.github.io%2fposts%2fgo_crud%2f" target=_blank>
+<i class="fas fa-envelope-open-text"></i>
+</a>
+</div>
+<div class="col-md-6 btn-improve-page">
+<a href=https://github.com/confy/adrian.ooo/edit/source/content/posts/go_crud/index.md title="Improve this page" target=_blank rel=noopener>
+<i class="fas fa-code-branch"></i>
+Improve this page
+</a>
+</div>
+</div>
+<hr>
+<div class="row next-prev-navigator">
+</div>
+<hr>
+</div>
+</div>
+</div>
+<a id=scroll-to-top class=btn><i class="fas fa-chevron-circle-up"></i></a>
+</section>
+<section class=toc-section id=toc-section>
+<div class=toc-holder>
+<h5 class="text-center pl-3">Table of Contents</h5>
+<hr>
+<div class=toc>
+<nav id=TableOfContents>
+<ul>
+<li><a href=#stack>Stack</a>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href=#echo>Echo</a></li>
+<li><a href=#gorm>GORM</a></li>
+<li><a href=#sqlite-with-the-gorm-driver>SQLite with the GORM driver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href=#setup>Setup</a></li>
+<li><a href=#making-the-server-with-echo>Making the server with Echo</a></li>
+<li><a href=#writing-the-model>Writing the model</a></li>
+<li><a href=#creating-a-database-factory>Creating a database factory</a></li>
+<li><a href=#creating-the-routes>Creating the routes</a>
+<ul>
+<li>
+<ul>
+<li><a href=#createpost>Create(POST)</a></li>
+<li><a href=#readget>Read(GET)</a></li>
+<li><a href=#updateput>Update(PUT)</a></li>
+<li><a href=#deletedelete>Delete(DELETE)</a></li>
+<li><a href=#average>Average</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href=#adding-the-routes-to-our-server>Adding the routes to our server</a></li>
+<li><a href=#conclusion>Conclusion</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</section>
+</div>
+<footer id=footer class="container-fluid text-center align-content-center footer pb-2">
+<div class="container pt-5">
+<div class="row text-left">
+<div class="col-md-4 col-sm-12">
+<h5>Navigation</h5>
+<ul>
+<li class=nav-item>
+<a class=smooth-scroll href=https://confy.github.io#about>About</a>
+</li>
+<li class=nav-item>
+<a class=smooth-scroll href=https://confy.github.io#experiences>Experiences</a>
+</li>
+<li class=nav-item>
+<a class=smooth-scroll href=https://confy.github.io#education>Education</a>
+</li>
+</ul>
+</div>
+<div class="col-md-4 col-sm-12">
+<h5>Contact me:</h5>
+<ul>
+<li><span>Discord: </span> <span>confy#3037</span></li>
+<li><a href=mailto:me@adrian.ooo target=_blank rel=noopener>
+<span><i class="fas fa-envelope"></i></span> <span>me@adrian.ooo</span>
+</a></li>
+</ul>
+</div>
+</div>
+</div>
+<hr>
+<div class=container>
+<div class="row text-left">
+<div class=col-md-4>
+<a id=theme href=https://github.com/hugo-toha/toha target=_blank rel=noopener>
+<img src=/images/theme-logo_hu8376fd15465fef26ffe66b6bcf0ca686_13669_32x0_resize_box_3.png alt="Toha Theme Logo">
+Toha
+</a>
+</div>
+<div class="col-md-4 text-center">© 2021 Copyright.</div>
+<div class="col-md-4 text-right">
+<a id=hugo href=https://gohugo.io/ target=_blank rel=noopener>Powered by
+<img src=/images/hugo-logo.svg alt="Hugo Logo" height=18>
+</a>
+</div>
+</div>
+</div>
+</footer>
+<script type=text/javascript src=/js/jquery-3.4.1.min.js></script>
+<script type=text/javascript src=/js/popper.min.js></script>
+<script type=text/javascript src=/js/bootstrap.min.js></script>
+<script type=text/javascript src=/js/navbar.js></script>
+<script type=text/javascript src=/js/plyr.js></script>
+<script type=text/javascript src=/js/main.js></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js></script>
+<script src=/js/single.js></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
