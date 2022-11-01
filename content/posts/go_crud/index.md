@@ -33,7 +33,7 @@ GORM is an ORM or Object relational mapper for Go that aims to be developer frie
 
 SQLite is a lightweight file based database that is easy to use and does not require a server to run. It's not as fast as a database server, but it will allow us to quickly containerize our application.
 
-We will be using the SQLite driver for GORM in order to connect
+We will be using the SQLite driver for GORM in order to connect.
 
 Eventually, the SQLite database will become a bottleneck as writes will lock the file momentarily. Later on in this project we'll experiment with benchmarking with Jmeter to see how our service performs under load.
 
