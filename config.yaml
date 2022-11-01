@@ -52,7 +52,7 @@ params:
   # GitHub repo of your site
   gitRepo: https://github.com/confy/adrian.ooo
   # Default branch of your Git repo
-  gitBranch: main
+  gitBranch: source
 
   # Configure various features of this theme
   features:
@@ -61,7 +61,7 @@ params:
       enable: true
     # Enable and configure blog posts
     blog:
-      enable: false
+      enable: true
       # Share post on different social media
       shareButtons:
         facebook: true
