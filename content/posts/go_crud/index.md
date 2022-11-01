@@ -2,7 +2,7 @@
 title: "Building a CRUD API in Go"
 date: 2022-10-31T05:00:25+08:00
 hero: /images/sections/posts/go_crud/hero.png
-description: Adding analytics and disquss comment in hugo theme Toha
+description: Exploring Go with Echo, Gorm and SQLite
 menu:
   sidebar:
     name: Go CRUD API
@@ -21,15 +21,15 @@ The github repo for this project can be found [here](https://github.com/confy/go
 
 I will be using the following Go modules:
 
-#### Echo
+##### Echo
 
 Echo is a high performance, extensible, minimalist web framework for Go. It is designed to quickly create APIs with minimal effort. Echo implements the Go stdlib `http.Handler` interface, with a handler created in a goroutine for each request. This allows for a high level of concurrency and performance.
 
-#### GORM
+##### GORM
 
 GORM is an ORM or Object relational mapper for Go that aims to be developer friendly. It is a very powerful tool that makes it easy to interact with databases and supports MySQL, Postgres, SQLite, SQL Server and Oracle.
 
-#### SQLite with the GORM driver
+##### SQLite with the GORM driver
 
 SQLite is a lightweight file based database that is easy to use and does not require a server to run. It's not as fast as a database server, but it will allow us to quickly containerize our application.
 
