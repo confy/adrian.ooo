@@ -9,7 +9,11 @@ menu:
     weight: 500
 ---
 
-Lately I have been looking for an oppurtunity to expand the languages in my toolbox and Go has become very interesting to me. This CRUD API was a good oppurtunity for me to get familiar with the language, and it is really suited for this project. I was struck by how easy it was to create a simple service like this, so I decided to document the process.
+I've been looking for an oppurtunity to pick up Go lately, and with a break in my studies recently it was a good oppurtunity to give it a try. 
+
+Go is really well suited to webservices like this as it offers a relatively simple and friendly syntax, high performance and the ability to compile to a single binary file with no dependencies. Go also offers easily accesible concurrency via goroutines.
+
+In this project we'll be creating a simple web service using Go, Echo and GORM with SQLite. In the end we'll have a single value CRUD API, with the ability to create, read, update and delete entries.
 
 The github repo for this project can be found [here](https://github.com/confy/go_crud).
 
@@ -19,7 +23,7 @@ I will be using the following Go modules:
 
 #### Echo
 
-Echo is a high performance, extensible, minimalist web framework for Go. It is designed to quickly create APIs with minimal effort. It is also very easy to use and has a lot of features.
+Echo is a high performance, extensible, minimalist web framework for Go. It is designed to quickly create APIs with minimal effort. Echo implements the Go stdlib `http.Handler` interface, with a handler created in a goroutine for each request. This allows for a high level of concurrency and performance.
 
 #### GORM
 
@@ -35,9 +39,9 @@ Eventually, the SQLite database will become a bottleneck as writes will lock the
 
 ## Setup
 
-First make sure you have Go installed. You can download it [here](https://go.dev/dl/). I'm using Go 1.19
+First make sure you have [Go](https://go.dev/dl/) installed. I'm using Go 1.19.
 
-First we'll create a new directory for our project and initialize a new go module.
+Let's create a new directory for our project and initialize a new go module.
 
 `mkdir go_crud`
 
@@ -45,7 +49,7 @@ First we'll create a new directory for our project and initialize a new go modul
 
 `go mod init go_crud`
 
-This will create a new `go.mod` file in our project directory. This is used by Go to manage dependencies
+This will create a new `go.mod` file in our project directory. This is used by Go to manage dependencies.
 
 ```go
 module go_crud
@@ -53,11 +57,17 @@ module go_crud
 go 1.19
 ```
 
-Next, we'll download our dependencies
+Next, we'll download our dependencies:
 
-`go get github.com/labstack/echo/v4 gorm.io/gorm gorm.io/driver/sqlite`
+`go get github.com/labstack/echo/v4` 
 
-This will download the Echo framework, GORM and the SQLite driver for GORM. Our `go.mod` file should now look like this
+`go get gorm.io/gorm`
+
+`go get gorm.io/driver/sqlite`
+
+This will download the Echo framework, GORM and the SQLite driver for GORM. 
+
+Our `go.mod` file should now look like this:
 
 ```go
 module go_crud
@@ -113,7 +123,8 @@ func main() {
 This will create a new Echo server that listens on port 8080. We'll be using the Logger and Recover middleware to log requests and recover from panics. We'll also add a new route that returns a string when we visit `localhost:8080/hello`.
 
 Now we can run our server with `go run main.go`
-Visit `localhost:8080/hello` and you should see `Hello 🌎` and see output in your terminal.
+
+Visit `localhost:8080/hello` and you should see `Hello 🌎` and see output in your terminal:
 
 ```plain
   ____    __
@@ -155,7 +166,9 @@ type Data struct {
 }
 ```
 
-This is a simple model that has a single field called `Value` that is a uint. Following the Name and type of the field, we have a json tag that will be used to serialize the data to JSON. We also have the `ID`, `CreatedAt`, `UpdatedAt` and `DeletedAt` fields that are created automatically by GORM which I've chosen to define explicitly here.
+This is a simple model that has a single field called `Value` that is a uint. Following the Name and type of the field, we have a json tag that will be used to serialize the data to JSON. 
+
+We also have the `ID`, `CreatedAt`, `UpdatedAt` and `DeletedAt` fields that are created automatically by GORM which I've chosen to define explicitly here.
 
 ## Creating a database factory
 
@@ -186,11 +199,12 @@ func Connect() *gorm.DB {
 ```
 
 First we import our model, along with gorm and the sqlite driver. We'll also create a global variable called `DB` that we can use to access our database from other files.
+
 The `Connect` function will create a new sqlite database called `test.db` and create a table for our data model(using `AutoMigrate`) before returning our DB. If the database already exists, it will just connect to it.
 
 ## Creating the routes
 
-Ok let's tie everything together. We'll create a new file called `routes.go` in the `routes` folder and add the following code.
+Ok let's tie everything together. We'll create a new file called `routes.go` in the `routes` folder and add the following:
 
 ```go
 package routes
@@ -210,22 +224,11 @@ func message(message string) map[string]string {
 	return map[string]string{"message": message}
 }
 
-func parseUint(s string) (uint, error) {
-  i, err := strconv.ParseUint(s, 10, 64)
-  if err != nil {
-	return 0, err
-  }
-  return uint(i), nil
-}
-
 ```
 
 We'll import our database, model and echo, along with http for status codes and strconv for formatting responses. Next we'll create our `DB` variable using the `Connect` function we created earlier.
 
 We'll also create a message function for easily sending JSON responses. One thing that is worth noticing here is the way Go allows you to anonymously declare maps with specific types in the `map[string]string` syntax.
-
-Finally we'll create our own wrapper function for parseUint that does some error handling. It's nice to have this up here so our routes don't get too cluttered. We'll use this to parse the `id` parameter from our routes. The first thing I kept noticing when I started using go was the way it forces you to handle errors. I think it's a good thing, but it can be a bit annoying at first. Many of the standard and library functions we are using are returning this `error` type, and I'm returning it in our own function as well.
-
 
 
 As it is now we aren't using many of our imports, so Go will complain. We can fix this by adding some routes. Each route will receive `c echo.Context` and return the same `error` type
@@ -239,6 +242,7 @@ func PostData(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
 	DB.Create(&data)
 	return c.JSON(http.StatusCreated, data)
 }
@@ -251,7 +255,7 @@ func GetData(c echo.Context) error {
 	id := c.Param("id")
 	var data models.Data
 	DB.First(&data, id)
-	if data.ID == 0 {
+	if data.ID == 0 { // Gorm returns id 0 if not found
 		return echo.NewHTTPError(http.StatusNotFound, message("Data not found"))
 	}
 	return c.JSON(http.StatusOK, data)
@@ -263,16 +267,20 @@ func GetData(c echo.Context) error {
 ```go
 func PutData(c echo.Context) error {
 	id := c.Param("id")
-	id_uint, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, message("Invalid ID"))
-	}
 	var data models.Data
-	data.ID = uint(id_uint)
 	DB.First(&data, id)
-	if err := c.Bind(&data); err != nil {
+	if data.ID == 0 {
+		return echo.NewHTTPError(http.StatusNotFound, message("Data not found"))
+	}
+	id_uint, err := strconv.ParseUint(id, 10, 64)
+	data.ID = id_uint
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, message("Invalid ID"))
+	}
+	if err := c.Bind(&data); err != nil { // Binds the request body to our data var
 		return err
 	}
+	
 	DB.Save(&data)
 	return c.JSON(http.StatusOK, data)
 }
@@ -282,7 +290,6 @@ func PutData(c echo.Context) error {
 
 ```go
 func DeleteData(c echo.Context) error {
-	//with error handling
 	id := c.Param("id")
 	var data models.Data
 	DB.First(&data, id)
@@ -300,14 +307,14 @@ func DeleteData(c echo.Context) error {
 func GetAverage(c echo.Context) error {
 	items := []models.Data{}
 	DB.Find(&items)
-	var sum uint
+	var sum uint64
 	for _, item := range items {
 		sum += item.Value
 	}
-	length := uint(len(items))
+	length := len(items)
 	res := struct {
 		Average float64 `json:"average"`
-		Length uint `json:"length"`
+		Length int `json:"length"`
 	} {
 		Average: float64(sum) / float64(length),
 		Length: length,
@@ -342,11 +349,16 @@ func main() {
 
 	e.GET("/average", routes.GetAverage)
 
+	e.GET("/hello", func(c echo.Context) error {
+        return c.String(http.StatusOK, "Hello 🌎")
+    })
+
 	e.Logger.Fatal(e.Start(":8080"))
+	
 }
 ```
 
-We'll import our routes and also bind each of our routes to the `/data` or `/average` url. for our average function.
+We'll import our routes and also bind each of our routes to the `/data` or `/average` url.
 
 Finally, we can start our server using `go run main.go` and test our routes using curl or Postman.
 
@@ -369,5 +381,8 @@ We'll post again using `{"value": 21}` and now we can query `localhost:8080/aver
 ```
 
 ## Conclusion
-I hope this showcased how easy it is to get started with Go and how it can be used to create a simple web service. I also hope that this will encourage you to try out Go and see how it can be used to create your own projects. 
-I would usually use python for something like this, and after dealing with some slowness in the past, Go really is the best of both worlds. It has the speed and simplicity of a compiled language and the ease of use of a scripting language.
+I hope this showcased how easy it is to get started with Go and how it can be used to create a simple web service. I was surprised at how easy it was to use and how much I enjoyed working with it.
+
+I would usually use python for something like this and I have dealt with some slowness in the past. Compared to Python, Go really is the best of both worlds. It has the speed and simplicity of a compiled language and the ease of use of a scripting language.
+
+I hope you enjoyed this tutorial and if you have any questions or suggestions, feel free to email me at [me@adrian.ooo](mailto:me@adrian.ooo)

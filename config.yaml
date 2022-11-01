@@ -52,7 +52,7 @@ params:
   # GitHub repo of your site
   gitRepo: https://github.com/confy/adrian.ooo
   # Default branch of your Git repo
-  gitBranch: main
+  gitBranch: source
 
   # Configure various features of this theme
   features:
