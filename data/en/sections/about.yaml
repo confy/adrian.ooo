@@ -8,17 +8,17 @@ section:
   template: sections/about.html
 
 # your designation
-designation: Student
+designation: DevOps Developer
 # your company information
 company: 
-  name: BCIT
-  url: "https://www.bcit.ca/programs/computer-information-technology-diploma-full-time-5540dipma/"
+  name: Fortinet
+  url: "https://www.fortinet.com/"
 
 # your resume. this file path should be relative to you "static" directory
-resume: "files/resume2022.pdf"
+resume: "files/resume2022-v2.pdf"
 
 # a summary about you
-summary: 'I am a computing student with 2 years of technical work experience and a life long interest in technology. My experience is diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
+# summary: 'I am a computing student with 2 years of technical work experience and a life long interest in technology. My experience is diverse, from resoldering parts on laptop motherboards all the way to writing web applications and deploying them to the cloud.'
 
 # your social links
 # give as many as you want. use font-awesome for the icons.
@@ -38,10 +38,10 @@ socialLinks:
 # currently supported colors: blue, yellow, pink, green, sky, orange
 softSkills:
 - name: Fast Learner
-  percentage: 90
-  color: red
+  percentage: 95
+  color: orange
 - name: Creativity
-  percentage: 90
+  percentage: 95
   color: green
 - name: Enthusiasm
   percentage: 95

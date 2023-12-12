@@ -11,13 +11,32 @@ section:
 # Your experiences
 experiences:
 - company:
+    name: Fortinet
+    url: "https://www.fortinet.com/"
+    location: Burnaby, BC, Canada
+    # company overview
+    overview: Fortinet is a global leader in broad, integrated and automated cybersecurity solutions that protect businesses and people against cyberattacks across the entire attack surface.
+  positions:
+  - designation: DevOps Developer
+    start: Jan 2023
+    # don't provide end date if you are currently working there. It will be replaced by "Present"
+    end: Present
+    # give some points about what was your responsibilities at the company.
+    responsibilities:
+    - Working on the DevSecOps team 
+    - Develop and maintain pipelines and automation related to SAST(Coverity) and SCA(BlackDuck)
+    - Roll out BlackDuck SCA tool to development teams, including training, documentation, automation and support
+    - Develop API integrations in between BlackDuck and internal tools
+    - Write Gitlab and Jenkins pipelines in Bash, Python, and Groovy
+    - Create, document, and maintain BlackDuck servers using Kubernetes and Helm
+- company:
     name: Safe Software
     url: "https://www.safe.com/"
-    location: Surrey
+    location: Surrey, BC, Canada
     # company overview
     overview: Safe Software is the maker of FME and the pioneering global leader in spatial data transformation technology. FME empowers users to confidently transform spatial data so it can be used and shared - where, when and how it's needed. 
   positions:
-  - designation: Devops Engineer (Intern)
+  - designation: DevOps Engineer (Intern)
     start: Jan 2022
     # don't provide end date if you are currently working there. It will be replaced by "Present"
     end: Aug 2022
@@ -32,7 +51,7 @@ experiences:
 - company:
     name: Encepta
     url: "https://www.encepta.net/"
-    location: Vancouver
+    location: Vancouver, BC, Canada
     # company overview
     overview: Encepta is a professional services firm delivering outside plant field services, design, inspection, and construction management, as well as big-data analytics and AI-powered models for the telecommunication sector.
   positions:
