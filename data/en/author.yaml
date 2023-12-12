@@ -7,11 +7,10 @@ image: "images/author/adrian-opalspoon.jpg"
 # give your some contact information. they will be used in the footer
 contactInfo:
   email: "me@adrian.ooo"
-  discord: "confy#3037"
+  discord: "confy."
 
-# some summary about what you do
 summary:
-  - I'm a BCIT Computing student
   - I like automating the boring things
+  - I have expertise in build systems, Kubernetes and DevSecOps tooling
   - I love Linux and open-source software
   - I live for music, food, and the outdoors
