@@ -25,10 +25,11 @@ experiences:
     responsibilities:
     - Working on the DevSecOps team 
     - Develop and maintain pipelines and automation related to SAST(Coverity) and SCA(BlackDuck)
-    - Roll out BlackDuck SCA tool to development teams, including training, documentation, automation and support
-    - Develop API integrations between BlackDuck and internal tools
-    - Write Gitlab and Jenkins pipelines in Bash, Python, and Groovy
+    - Roll out BlackDuck SCA tool to development teams, including training, documentation, automation and support for 20+ projects
+    - Develop API integrations between BlackDuck, Coverity and internal tools
+    - Write Gitlab CI and Jenkins pipelines in Bash, Python, and Groovy
     - Create, document, and maintain BlackDuck servers using Kubernetes and Helm
+    - Monitor services using Grafana, Prometheus, Loki and Promtail
 - company:
     name: Safe Software
     url: "https://www.safe.com/"
