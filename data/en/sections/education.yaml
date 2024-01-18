@@ -17,7 +17,7 @@ degrees:
     url: "https://www.bcit.ca/"
   grade: #(optional)
     scale: GPA
-    achieved: 90
+    achieved: 93
     outOf: 100
   # publications: #(optional)
   # - title: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
